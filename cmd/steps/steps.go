@@ -66,7 +66,7 @@ func InitSteps(options *Options) *Steps {
 						Desc:  "High performance, extensible, minimalist Go web framework",
 					},
 					{
-						Title: "Twerp",
+						Title: "Twirp",
 						Desc:  "A simple RPC framework with protobuf service definitions",
 					},
 				},

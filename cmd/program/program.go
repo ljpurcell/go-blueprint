@@ -47,7 +47,7 @@ var (
 	ginPackage     = []string{"github.com/gin-gonic/gin"}
 	fiberPackage   = []string{"github.com/gofiber/fiber/v2"}
 	echoPackage    = []string{"github.com/labstack/echo/v4", "github.com/labstack/echo/v4/middleware"}
-	twerpPackage   = []string{"github.com/twitchtv/twerp"}
+	twirpPackage   = []string{"github.com/twitchtv/twirp"}
 
 	cmdApiPath         = "cmd/api"
 	internalServerPath = "internal/server"
@@ -103,9 +103,9 @@ func (p *Project) createFrameworkMap() {
 		templater:   tpl.EchoTemplates{},
 	}
 
-	p.FrameworkMap["twerp"] = Framework{
-		packageName: twerpPackage,
-		templater:   tpl.TwerpTemplates{},
+	p.FrameworkMap["twirp"] = Framework{
+		packageName: twirpPackage,
+		templater:   tpl.TwirpTemplates{},
 	}
 }
 
