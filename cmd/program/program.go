@@ -8,6 +8,7 @@ import (
 	"log"
 	"os"
 	"strings"
+
 	tea "github.com/charmbracelet/bubbletea"
 	tpl "github.com/melkeydev/go-blueprint/cmd/template"
 	"github.com/melkeydev/go-blueprint/cmd/utils"
@@ -46,6 +47,7 @@ var (
 	ginPackage     = []string{"github.com/gin-gonic/gin"}
 	fiberPackage   = []string{"github.com/gofiber/fiber/v2"}
 	echoPackage    = []string{"github.com/labstack/echo/v4", "github.com/labstack/echo/v4/middleware"}
+	twerpPackage   = []string{"github.com/twitchtv/twerp"}
 
 	cmdApiPath         = "cmd/api"
 	internalServerPath = "internal/server"
@@ -99,6 +101,11 @@ func (p *Project) createFrameworkMap() {
 	p.FrameworkMap["echo"] = Framework{
 		packageName: echoPackage,
 		templater:   tpl.EchoTemplates{},
+	}
+
+	p.FrameworkMap["twerp"] = Framework{
+		packageName: twerpPackage,
+		templater:   tpl.TwerpTemplates{},
 	}
 }
 
