@@ -61,8 +61,13 @@ func InitSteps(options *Options) *Steps {
 						Title: "HttpRouter",
 						Desc:  "HttpRouter is a lightweight high performance HTTP request router for Go",
 					},
-					{Title: "Echo",
-						Desc: "High performance, extensible, minimalist Go web framework",
+					{
+						Title: "Echo",
+						Desc:  "High performance, extensible, minimalist Go web framework",
+					},
+					{
+						Title: "Twerp",
+						Desc:  "A simple RPC framework with protobuf service definitions",
 					},
 				},
 				Headers: "What framework do you want to use in your Go project?",
