@@ -5,6 +5,8 @@ package utils
 import (
 	"bytes"
 	"fmt"
+	"log"
+	"os"
 	"os/exec"
 
 	"github.com/spf13/pflag"
@@ -67,6 +69,25 @@ func GoGetPackage(appDir string, packages []string) error {
 	for _, packageName := range packages {
 		if err := ExecuteCmd("go",
 			[]string{"get", "-u", packageName},
+			appDir); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// GoInstallPackage runs "go install" for a given package
+func GoInstallPackage(packages []string) error {
+	appDir, err := os.Getwd()
+	if err != nil {
+		log.Printf("Could not get current working directory in GoInstallPackage: %v\n", err)
+		return err
+	}
+
+	for _, packageName := range packages {
+		if err := ExecuteCmd("go",
+			[]string{"install", packageName},
 			appDir); err != nil {
 			return err
 		}
