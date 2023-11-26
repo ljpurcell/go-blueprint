@@ -16,8 +16,8 @@ const ProgramName = "go-blueprint"
 
 // NonInteractiveCommand creates the command string from a flagSet
 // to be used for getting the equivalent non-interactive shell command
-func NonInteractiveCommand(flagSet *pflag.FlagSet) string {
-	nonInteractiveCommand := ProgramName
+func NonInteractiveCommand(use string, flagSet *pflag.FlagSet) string {
+	nonInteractiveCommand := fmt.Sprintf("%s %s", ProgramName, use)
 
 	visitFn := func(flag *pflag.Flag) {
 		if flag.Name != "help" {
@@ -105,5 +105,13 @@ func GoFmt(appDir string) error {
 		return err
 	}
 
+	return nil
+}
+
+func GoTidy(appDir string) error {
+	err := ExecuteCmd("go", []string{"mod", "tidy"}, appDir)
+	if err != nil {
+		return err
+	}
 	return nil
 }

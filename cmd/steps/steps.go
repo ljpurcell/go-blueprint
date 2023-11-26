@@ -2,20 +2,20 @@
 // each step of the CLI
 package steps
 
-import textinput "github.com/melkeydev/go-blueprint/cmd/ui/textinput"
+import "github.com/melkeydev/go-blueprint/cmd/flags"
 
 // A StepSchema contains the data that is used
 // for an individual step of the CLI
 type StepSchema struct {
-	StepName string  // The name of a given step
-	Options  []Item  // The slice of each option for a given step
-	Headers  string  // The title displayed at the top of a given step
-	Field    *string // The pointer to the string to be overwritten with the selected Item
+	StepName string // The name of a given step
+	Options  []Item // The slice of each option for a given step
+	Headers  string // The title displayed at the top of a given step
+	Field    string
 }
 
 // Steps contains a slice of steps
 type Steps struct {
-	Steps []StepSchema
+	Steps map[string]StepSchema
 }
 
 // An Item contains the data for each option
@@ -24,21 +24,15 @@ type Item struct {
 	Title, Desc string
 }
 
-// Options contains the name and type of the created project
-type Options struct {
-	ProjectName *textinput.Output
-	ProjectType string
-}
-
 // InitSteps initializes and returns the *Steps to be used in the CLI program
-func InitSteps(options *Options) *Steps {
+func InitSteps(projectType flags.Framework, databaseType flags.Database) *Steps {
 	steps := &Steps{
-		[]StepSchema{
-			{
+		map[string]StepSchema{
+			"framework": {
 				StepName: "Go Project Framework",
 				Options: []Item{
 					{
-						Title: "Standard library",
+						Title: "Standard-library",
 						Desc:  "The built-in Go standard library HTTP package",
 					},
 					{
@@ -71,7 +65,30 @@ func InitSteps(options *Options) *Steps {
 					},
 				},
 				Headers: "What framework do you want to use in your Go project?",
-				Field:   &options.ProjectType,
+				Field:   projectType.String(),
+			},
+			"driver": {
+				StepName: "Go Project Database Driver",
+				Options: []Item{
+					{
+						Title: "Mysql",
+						Desc:  "MySQL-Driver for Go's database/sql package",
+					},
+					{
+						Title: "Postgres",
+						Desc:  "Go postgres driver for Go's database/sql package"},
+					{
+						Title: "Sqlite",
+						Desc:  "sqlite3 driver conforming to the built-in database/sql interface"},
+					{
+						Title: "Mongo",
+						Desc:  "The MongoDB supported driver for Go."},
+					{
+						Title: "None",
+						Desc:  "Choose this option if you don't wish to install a specific database driver."},
+				},
+				Headers: "What database driver do you want to use in your Go project?",
+				Field:   databaseType.String(),
 			},
 		},
 	}
