@@ -153,6 +153,43 @@ func (p *Project) CreateMainFile() error {
 		}
 	}
 
+	// Twirp specific set-up
+	if p.ProjectType == "twirp" {
+
+		// Install dependencies for code-gen
+		err = utils.GoGetPackage(projectPath, []string{"google.golang.org/protobuf"})
+		if err != nil {
+			log.Printf("Could not install protobuf dependency for Twirp framework %v\n", err)
+			cobra.CheckErr(err)
+		}
+
+		codeGenPackages := []string{
+			"github.com/twitchtv/twirp/protoc-gen-twirp@latest",
+			"google.golang.org/protobuf/cmd/protoc-gen-go@latest",
+		}
+		log.Printf("Downloading latest protoc packages for code generation...\n")
+		err = utils.GoInstallPackage(codeGenPackages)
+		if err != nil {
+			log.Printf("Could not install code-gen dependency for Twirp framework %v\n", err)
+			cobra.CheckErr(err)
+		}
+
+		// Create proto-file
+		err = p.CreateFileWithInjection("twirp", projectPath, "hello.proto", "proto-file")
+		if err != nil {
+			cobra.CheckErr(err)
+			return err
+		}
+
+		// Code-gen
+		cgCmd := "protoc"
+		cgArgs := []string{"--twirp_out=.", "--go_out=.", "twirp/hello.proto"}
+		err := utils.ExecuteCmd(cgCmd, cgArgs, projectPath)
+		if err != nil {
+			return err
+		}
+	}
+
 	err = p.CreatePath(cmdApiPath, projectPath)
 	if err != nil {
 		log.Printf("Error creating path: %s", projectPath)
@@ -280,6 +317,10 @@ func (p *Project) CreatePath(pathToCreate string, projectPath string) error {
 // CreateFileWithInjection creates the given file at the
 // project path, and injects the appropriate template
 func (p *Project) CreateFileWithInjection(pathToCreate string, projectPath string, fileName string, methodName string) error {
+	err := p.CreatePath(pathToCreate, projectPath)
+	if err != nil {
+		return err
+	}
 	createdFile, err := os.Create(fmt.Sprintf("%s/%s/%s", projectPath, pathToCreate, fileName))
 	if err != nil {
 		return err
@@ -297,6 +338,13 @@ func (p *Project) CreateFileWithInjection(pathToCreate string, projectPath strin
 	case "routes":
 		createdTemplate := template.Must(template.New(fileName).Parse(string(p.FrameworkMap[p.ProjectType].templater.Routes())))
 		err = createdTemplate.Execute(createdFile, p)
+	case "proto-file":
+		if p.ProjectType == "twirp" {
+			createdTemplate := template.Must(template.New(fileName).Parse(string(tpl.MakeProtoFile())))
+			err = createdTemplate.Execute(createdFile, p)
+		} else {
+			err = fmt.Errorf("cannot call MakeProtoFile() for non-Twirp implementation")
+		}
 	}
 
 	if err != nil {
