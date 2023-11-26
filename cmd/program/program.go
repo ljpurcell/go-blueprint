@@ -79,6 +79,7 @@ var (
 	ginPackage     = []string{"github.com/gin-gonic/gin"}
 	fiberPackage   = []string{"github.com/gofiber/fiber/v2"}
 	echoPackage    = []string{"github.com/labstack/echo/v4", "github.com/labstack/echo/v4/middleware"}
+	twirpPackage   = []string{"github.com/twitchtv/twirp"}
 
 	mysqlDriver    = []string{"github.com/go-sql-driver/mysql"}
 	postgresDriver = []string{"github.com/lib/pq"}
@@ -144,6 +145,11 @@ func (p *Project) createFrameworkMap() {
 	p.FrameworkMap[flags.Echo] = Framework{
 		packageName: echoPackage,
 		templater:   framework.EchoTemplates{},
+	}
+
+	p.FrameworkMap[flags.Twirp] = Framework{
+		packageName: twirpPackage,
+		templater:   framework.TwirpTemplates{},
 	}
 }
 
@@ -304,7 +310,6 @@ func (p *Project) CreateMainFile() error {
 			"github.com/twitchtv/twirp/protoc-gen-twirp@latest",
 			"google.golang.org/protobuf/cmd/protoc-gen-go@latest",
 		}
-		log.Printf("Downloading latest protoc packages for code generation...\n")
 		err = utils.GoInstallPackage(codeGenPackages)
 		if err != nil {
 			log.Printf("Could not install code-gen dependency for Twirp framework %v\n", err)
@@ -487,6 +492,11 @@ func (p *Project) CreatePath(pathToCreate string, projectPath string) error {
 // CreateFileWithInjection creates the given file at the
 // project path, and injects the appropriate template
 func (p *Project) CreateFileWithInjection(pathToCreate string, projectPath string, fileName string, methodName string) error {
+	err := p.CreatePath(pathToCreate, projectPath)
+	if err != nil {
+		return err
+	}
+
 	createdFile, err := os.Create(fmt.Sprintf("%s/%s/%s", projectPath, pathToCreate, fileName))
 	if err != nil {
 		return err
@@ -521,7 +531,7 @@ func (p *Project) CreateFileWithInjection(pathToCreate string, projectPath strin
 		err = createdTemplate.Execute(createdFile, p)
 	case "proto-file":
 		if p.ProjectType == "twirp" {
-			createdTemplate := template.Must(template.New(fileName).Parse(string(tpl.MakeProtoFile())))
+			createdTemplate := template.Must(template.New(fileName).Parse(string(framework.TwirpTemplates{}.ProtoFile())))
 			err = createdTemplate.Execute(createdFile, p)
 		} else {
 			err = fmt.Errorf("cannot call MakeProtoFile() for non-Twirp implementation")

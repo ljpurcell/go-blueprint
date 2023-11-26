@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+    option go_package = "{{.ProjectName}}/twirp/hello";
+
+    // HelloWorld service sends a personalized "hello world" message to clients
+    service HelloWorld {
+    rpc SayHelloTo(ClientName) returns (PersonalizedHelloWorld);
+    }
+
+    // The name of the client receiving the message
+    message ClientName {
+    string name = 1;
+    }
+
+    // The message returned to the client
+    message PersonalizedHelloWorld {
+    string msg = 1;
+    }

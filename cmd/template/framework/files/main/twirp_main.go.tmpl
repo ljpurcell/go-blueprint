@@ -1,0 +1,16 @@
+package main
+
+    import (
+        "net/http"
+        "github.com/twitchtv/twirp"
+		pb "{{.ProjectName}}/twirp/hello"
+    )
+
+    func main() {
+        hwServer := pb.NewHelloWorldServer(&handlers.HelloWorld{})
+        mux := http.NewServeMux()
+        mux.Handle(hwServer.PathPrefix(), hwServer)
+
+        // Start the server
+        http.ListenAndServe(":8080", hwServer)
+    }

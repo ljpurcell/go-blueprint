@@ -1,0 +1,13 @@
+package server
+
+    import (
+        "context"
+        "github.com/twitchtv/twirp"
+        "{{.ProjectName}}/twirp/hello"
+    )
+
+    type HelloWorld struct{}
+
+    func (hw *HelloWorld) HelloWorld(ctx context.Context, req *protobuf.HelloRequest) (*protobuf.HelloResponse, error) {
+        return &protobuf.HelloResponse{Message: "Hello, Twirp!"}, nil
+    }
